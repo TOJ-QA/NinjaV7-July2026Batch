@@ -33,10 +33,10 @@ public class TC06_AddAffiliate extends BaseClass {
             LoginPage lp = new LoginPage(getDriver());
 
             log.info("Entering email");
-            lp.setEmail("sid@cloudberry.services");
+            lp.setEmail("tracyojoseph@yahoo.com");
 
             log.info("Entering password");
-            lp.setPwd("Test123");
+            lp.setPwd("Password11");
 
             log.info("Submitting login");
             lp.clickLogin();
@@ -52,8 +52,8 @@ public class TC06_AddAffiliate extends BaseClass {
             ap.fillAffiliateDetails(
                     "CloudBerry",
                     "cloudberry.services",
-                    "123456",
-                    "Shadab Siddiqui"
+                    "1155464",
+                    "Tracy Joseph"
             );
 
             boolean affiliateStatus = ap.isAffiliateAdded();
