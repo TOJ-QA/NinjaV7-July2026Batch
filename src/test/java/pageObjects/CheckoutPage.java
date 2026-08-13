@@ -3,6 +3,9 @@ package pageObjects;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
+import java.time.Duration;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class CheckoutPage extends BasePage {
 
@@ -34,18 +37,40 @@ public class CheckoutPage extends BasePage {
         loginPageLink.click();}
 
     public void completeCheckout() throws InterruptedException {
-        new Select(shippingAddressDropdown).selectByIndex(1);
-        shippingMethodsButton.click();
-        flatShippingButton.click();
-        paymentMethodsButton.click();
-        codButton.click();
-        scroll(confirmButton);
-        Thread.sleep(500);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", confirmButton);
-    }
 
-    private void scroll(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
-       // ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
+    By shippingAddress = By.id("input-shipping-address");
+    By shippingMethods = By.id("button-shipping-methods");
+    By flatShipping = By.id("button-shipping-method");
+    By paymentMethods = By.id("button-payment-methods");
+    By cod = By.id("button-payment-method");
+    By confirm = By.xpath("//div[@class='text-end']//button[contains(text(),'Confirm')]");
+
+    wait.until(ExpectedConditions.visibilityOfElementLocated(shippingAddress));
+
+    Select select = new Select(
+            wait.until(ExpectedConditions.elementToBeClickable(shippingAddress))
+    );
+    select.selectByIndex(1);
+
+    wait.until(ExpectedConditions.elementToBeClickable(shippingMethods)).click();
+
+    wait.until(ExpectedConditions.elementToBeClickable(flatShipping)).click();
+
+    wait.until(ExpectedConditions.elementToBeClickable(paymentMethods)).click();
+
+    wait.until(ExpectedConditions.elementToBeClickable(cod)).click();
+
+       WebElement confirmButton = wait.until(
+            ExpectedConditions.elementToBeClickable(confirm)
+    );
+
+    ((JavascriptExecutor) driver).executeScript(
+            "arguments[0].scrollIntoView({block:'center'});",
+            confirmButton
+    );
+
+    wait.until(ExpectedConditions.elementToBeClickable(confirm)).click();
     }
 }
