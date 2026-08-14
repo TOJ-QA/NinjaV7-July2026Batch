@@ -3,6 +3,7 @@ package pageObjects;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -37,9 +38,10 @@ public class AffiliatePage extends BasePage {
     @FindBy(xpath = "//div[@class='alert alert-success alert-dismissible']")
     WebElement successMessage;
 
-    public void navigateToAffiliateForm() throws InterruptedException {
+    public void navigateToAffiliateForm() {
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(15));
 
         By affiliateLocator =
                 By.xpath("//a[normalize-space()='Affiliate']");
@@ -47,32 +49,76 @@ public class AffiliatePage extends BasePage {
         System.out.println(">>> Waiting for Affiliate link");
 
         WebElement affiliate = wait.until(
-                ExpectedConditions.elementToBeClickable(affiliateLocator)
+                ExpectedConditions.presenceOfElementLocated(
+                        affiliateLocator
+                )
         );
 
         System.out.println(">>> Affiliate link found");
 
         ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block: 'center'});",
+                "arguments[0].scrollIntoView({block:'center', inline:'center'});",
                 affiliate
         );
 
-        Thread.sleep(500);
-
-        // Find it fresh again after scrolling
         affiliate = wait.until(
-                ExpectedConditions.elementToBeClickable(affiliateLocator)
+                ExpectedConditions.visibilityOfElementLocated(
+                        affiliateLocator
+                )
         );
 
-        System.out.println(">>> About to click Affiliate");
+        System.out.println(">>> Affiliate link visible");
 
-        affiliate.click();
+        try {
+
+            affiliate = wait.until(
+                    ExpectedConditions.elementToBeClickable(
+                            affiliateLocator
+                    )
+            );
+
+            System.out.println(">>> About to click Affiliate");
+
+            affiliate.click();
+
+        } catch (ElementClickInterceptedException e) {
+
+            System.out.println(
+                    ">>> Normal click intercepted. Using JavaScript click."
+            );
+
+            affiliate = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(
+                            affiliateLocator
+                    )
+            );
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center', inline:'center'});",
+                    affiliate
+            );
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    affiliate
+            );
+        }
 
         System.out.println(">>> Affiliate click completed");
     }
 
-    public void fillAffiliateDetails(String company, String website, String tax, String chequeName)
-            throws InterruptedException {
+    public void fillAffiliateDetails(
+            String company,
+            String website,
+            String tax,
+            String chequeName) throws InterruptedException {
+
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(15));
+
+        wait.until(
+                ExpectedConditions.visibilityOf(inputCompany)
+        );
 
         inputCompany.clear();
         inputCompany.sendKeys(company);
@@ -84,7 +130,10 @@ public class AffiliatePage extends BasePage {
         inputTax.sendKeys(tax);
 
         scrollToView(inputCheque);
-        Thread.sleep(300);
+
+        wait.until(
+                ExpectedConditions.elementToBeClickable(inputCheque)
+        );
 
         inputCheque.clear();
         inputCheque.sendKeys(chequeName);
@@ -92,24 +141,46 @@ public class AffiliatePage extends BasePage {
         scrollAndClick(continueButton);
     }
 
-
     public boolean isAffiliateAdded() {
-        return successMessage.isDisplayed();
+
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(15));
+
+        return wait.until(
+                ExpectedConditions.visibilityOf(successMessage)
+        ).isDisplayed();
     }
 
-
     private void scrollToView(WebElement element) {
+
         ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView(true);",
+                "arguments[0].scrollIntoView({block:'center', inline:'center'});",
                 element
         );
     }
 
+    private void scrollAndClick(WebElement element)
+            throws InterruptedException {
 
-    private void scrollAndClick(WebElement element) throws InterruptedException {
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(15));
 
         scrollToView(element);
-        Thread.sleep(500);
-        element.click();
+
+        wait.until(
+                ExpectedConditions.elementToBeClickable(element)
+        );
+
+        try {
+
+            element.click();
+
+        } catch (ElementClickInterceptedException e) {
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    element
+            );
+        }
     }
 }
