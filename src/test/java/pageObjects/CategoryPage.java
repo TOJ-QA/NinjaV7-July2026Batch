@@ -3,6 +3,7 @@ package pageObjects;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -61,34 +62,46 @@ public class CategoryPage extends BasePage {
         By hpProductLocator =
                 By.xpath("//a[normalize-space()='HP LP3065']");
 
-        // Wait for the HP product to exist
+        // Wait until HP LP3065 is visible
         WebElement hpProduct = wait.until(
-                ExpectedConditions.presenceOfElementLocated(
+                ExpectedConditions.visibilityOfElementLocated(
                         hpProductLocator
                 )
         );
 
-        // Scroll the product into the center of the screen
+        // Scroll HP LP3065 to the center of the viewport
         ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
+                "arguments[0].scrollIntoView({block:'center', inline:'center'});",
                 hpProduct
         );
 
-        // Find the element again after scrolling
+        // Find the element fresh after scrolling
         hpProduct = wait.until(
-                ExpectedConditions.elementToBeClickable(
+                ExpectedConditions.visibilityOfElementLocated(
                         hpProductLocator
                 )
         );
 
         try {
 
-            // Normal Selenium click
+            // Wait until Selenium considers it clickable
+            hpProduct = wait.until(
+                    ExpectedConditions.elementToBeClickable(
+                            hpProductLocator
+                    )
+            );
+
             hpProduct.click();
 
-        } catch (org.openqa.selenium.ElementNotInteractableException e) {
+        } catch (ElementNotInteractableException e) {
 
-            // Fallback if Chrome reports the element as non-interactable
+            // JavaScript fallback
+            hpProduct = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(
+                            hpProductLocator
+                    )
+            );
+
             ((JavascriptExecutor) driver).executeScript(
                     "arguments[0].click();",
                     hpProduct
