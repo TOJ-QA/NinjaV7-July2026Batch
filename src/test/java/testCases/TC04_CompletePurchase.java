@@ -23,6 +23,7 @@ public class TC04_CompletePurchase extends BaseClass {
         log.info("===== TC04_CompletePurchase STARTED =====");
 
         try {
+
             // Step 1: Navigate to product category
             log.debug("Initializing CategoryPage");
             CategoryPage cp = new CategoryPage(getDriver());
@@ -77,44 +78,81 @@ public class TC04_CompletePurchase extends BaseClass {
 
             // Step 5: Confirmation validation
             log.debug("Initializing ConfirmationPage");
-            ConfirmationPage confirmationPage = new ConfirmationPage(getDriver());
+            ConfirmationPage confirmationPage =
+                    new ConfirmationPage(getDriver());
 
             boolean orderStatus = confirmationPage.isOrderPlaced();
+
             log.info("Order placement status: {}", orderStatus);
 
-            // Assertion with logging + screenshot
+            // Assertion
             try {
+
                 log.debug("Asserting order placement");
-                Assert.assertTrue(orderStatus, "Order placement failed!");
+
+                Assert.assertTrue(
+                        orderStatus,
+                        "Order placement failed!"
+                );
+
                 log.info("✅ Assertion PASSED: Order placed successfully");
 
             } catch (AssertionError ae) {
-                log.error("❌ Assertion FAILED: Order was not placed successfully", ae);
 
-                String screenshotPath = captureScreen("TC04_CompletePurchase");
-                log.info("Screenshot captured at: {}", screenshotPath);
+                log.error(
+                        "❌ Assertion FAILED: Order was not placed successfully",
+                        ae
+                );
 
-                throw ae; // required for RetryAnalyzer
+                String screenshotPath =
+                        captureScreen("TC04_CompletePurchase");
+
+                log.info(
+                        "Screenshot captured at: {}",
+                        screenshotPath
+                );
+
+                throw ae;
             }
 
         } catch (InterruptedException ie) {
-            log.error("Thread interrupted during wait in TC04_CompletePurchase", ie);
 
-            String screenshotPath = captureScreen("TC04_CompletePurchase_INTERRUPTED");
-            log.info("Screenshot captured at: {}", screenshotPath);
+            log.error(
+                    "Thread interrupted during wait in TC04_CompletePurchase",
+                    ie
+            );
+
+            String screenshotPath =
+                    captureScreen("TC04_CompletePurchase_INTERRUPTED");
+
+            log.info(
+                    "Screenshot captured at: {}",
+                    screenshotPath
+            );
 
             Thread.currentThread().interrupt();
+
             throw new RuntimeException(ie);
 
         } catch (Exception e) {
-            log.error("Unexpected exception occurred during TC04_CompletePurchase", e);
 
-            String screenshotPath = captureScreen("TC04_CompletePurchase_EXCEPTION");
-            log.info("Screenshot captured at: {}", screenshotPath);
+            log.error(
+                    "Unexpected exception occurred during TC04_CompletePurchase",
+                    e
+            );
+
+            String screenshotPath =
+                    captureScreen("TC04_CompletePurchase_EXCEPTION");
+
+            log.info(
+                    "Screenshot captured at: {}",
+                    screenshotPath
+            );
 
             throw e;
 
         } finally {
+
             log.info("===== TC04_CompletePurchase FINISHED =====");
         }
     }
