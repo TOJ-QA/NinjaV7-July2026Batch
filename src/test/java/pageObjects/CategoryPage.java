@@ -1,60 +1,91 @@
 package pageObjects;
 
+import java.time.Duration;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class CategoryPage extends BasePage {
 
-	public CategoryPage(WebDriver driver) {
-		super(driver);
-	}
+    public CategoryPage(WebDriver driver) {
+        super(driver);
+    }
 
-	@FindBy(xpath = "//a[normalize-space()='Laptops & Notebooks']")
-	WebElement link_Laptops;
+    @FindBy(xpath = "//a[normalize-space()='Laptops & Notebooks']")
+    WebElement laptopsAndNotebooks;
 
-	@FindBy(xpath = "//a[normalize-space()='Show All Laptops & Notebooks']")
-	WebElement link_ShowAll;
+    @FindBy(xpath = "//a[normalize-space()='Show All Laptops & Notebooks']")
+    WebElement showAll;
 
-	@FindBy(xpath = "//a[normalize-space()='HP LP3065']")
-	WebElement product_HP;
+    @FindBy(xpath = "//a[normalize-space()='HP LP3065']")
+    WebElement product_HP;
 
-	public void clickLaptopsAndNotebooks() throws InterruptedException {
+    public void clickLaptopsAndNotebooks() {
 
-	    Thread.sleep(1000);
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(15));
 
-	    WebElement laptops = driver.findElement(
-	            org.openqa.selenium.By.xpath("//a[normalize-space()='Laptops & Notebooks']")
-	    );
+        WebElement laptops = wait.until(
+                ExpectedConditions.elementToBeClickable(laptopsAndNotebooks)
+        );
 
-	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView(true);", laptops);
+        laptops.click();
+    }
 
-	    Thread.sleep(500);
+    public void clickShowAll() {
 
-	    laptops.click();
-	}
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(15));
 
-	public void clickShowAll() {
-		link_ShowAll.click();
-	}
+        WebElement showAllLink = wait.until(
+                ExpectedConditions.elementToBeClickable(showAll)
+        );
 
-	public void selectHPProduct1() throws InterruptedException {
-		// Scroll into view
-		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", product_HP);
+        showAllLink.click();
+    }
 
-		Thread.sleep(1000);
+    public void selectHPProduct() {
 
-		product_HP.click();
-	}
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(15));
 
-	public void selectHPProduct() throws InterruptedException {
-		// Scroll into view
-		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", product_HP);
+        By hpProductLocator =
+                By.xpath("//a[normalize-space()='HP LP3065']");
 
-		Thread.sleep(1000);
+        WebElement hpProduct = wait.until(
+                ExpectedConditions.presenceOfElementLocated(
+                        hpProductLocator
+                )
+        );
 
-		product_HP.click();
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                hpProduct
+        );
+
+        hpProduct = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        hpProductLocator
+                )
+        );
+
+        try {
+
+            hpProduct.click();
+
+        } catch (org.openqa.selenium.ElementNotInteractableException e) {
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    hpProduct
+            );
+        }
+    }
+}
 	}
 }
