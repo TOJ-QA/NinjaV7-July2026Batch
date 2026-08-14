@@ -31,7 +31,9 @@ public class CategoryPage extends BasePage {
                 new WebDriverWait(driver, Duration.ofSeconds(15));
 
         WebElement laptops = wait.until(
-                ExpectedConditions.elementToBeClickable(laptopsAndNotebooks)
+                ExpectedConditions.elementToBeClickable(
+                        laptopsAndNotebooks
+                )
         );
 
         laptops.click();
@@ -43,7 +45,9 @@ public class CategoryPage extends BasePage {
                 new WebDriverWait(driver, Duration.ofSeconds(15));
 
         WebElement showAllLink = wait.until(
-                ExpectedConditions.elementToBeClickable(showAll)
+                ExpectedConditions.elementToBeClickable(
+                        showAll
+                )
         );
 
         showAllLink.click();
@@ -57,17 +61,20 @@ public class CategoryPage extends BasePage {
         By hpProductLocator =
                 By.xpath("//a[normalize-space()='HP LP3065']");
 
+        // Wait for the HP product to exist
         WebElement hpProduct = wait.until(
                 ExpectedConditions.presenceOfElementLocated(
                         hpProductLocator
                 )
         );
 
+        // Scroll the product into the center of the screen
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].scrollIntoView({block:'center'});",
                 hpProduct
         );
 
+        // Find the element again after scrolling
         hpProduct = wait.until(
                 ExpectedConditions.elementToBeClickable(
                         hpProductLocator
@@ -76,16 +83,16 @@ public class CategoryPage extends BasePage {
 
         try {
 
+            // Normal Selenium click
             hpProduct.click();
 
         } catch (org.openqa.selenium.ElementNotInteractableException e) {
 
+            // Fallback if Chrome reports the element as non-interactable
             ((JavascriptExecutor) driver).executeScript(
                     "arguments[0].click();",
                     hpProduct
             );
         }
     }
-}
-	}
 }
